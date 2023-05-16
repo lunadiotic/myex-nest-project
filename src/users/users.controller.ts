@@ -15,10 +15,10 @@ import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 
 @Controller('users')
+@Serialize(UserDto)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Serialize(UserDto)
   @Get()
   findAllUsers(@Query('email') email: string) {
     return this.usersService.find(email);
@@ -32,7 +32,6 @@ export class UsersController {
   @Serialize(UserDto)
   @Get('/:id')
   findUser(@Param('id') id: string) {
-    console.log('running on handler/controller');
     return this.usersService.findOneBy(parseInt(id));
   }
 
