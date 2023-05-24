@@ -67,4 +67,37 @@ describe('AuthService', () => {
       'Email tidak terdaftar',
     );
   });
+
+  it('should fail if user login with invalid password', async () => {
+    fakeUsersService.find = () => {
+      return Promise.resolve([
+        {
+          id: 1,
+          name: 'John Doe',
+          email: 'hv3RU@example.com',
+          password: 'password',
+        } as User,
+      ]);
+    };
+
+    await expect(
+      service.login('hv3RU@example.com', 'password'),
+    ).rejects.toThrow('Password salah');
+  });
+
+  it('should login existing user', async () => {
+    fakeUsersService.find = () => {
+      return Promise.resolve([
+        {
+          id: 1,
+          name: 'Jane Doe',
+          email: 'hv3RU@example.com',
+          password:
+            '0bdb34e1b84c48c5.463a3483d77675d1284dc73d01176e5cfbc9dfd2b55afc675469c5395bdb0a5027b338346696c4be41aaa2baef2fa4751f7a1bb745905fbb222cd508734588a4',
+        } as User,
+      ]);
+    };
+    const user = await service.login('hv3RU@example.com', 'password');
+    expect(user).toBeDefined();
+  });
 });
