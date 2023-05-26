@@ -8,10 +8,23 @@ describe('AuthService', () => {
   let fakeUsersService: Partial<UsersService>;
 
   beforeEach(async () => {
+    const users: User[] = [];
+
     fakeUsersService = {
-      find: () => Promise.resolve([]),
+      find: (email: string) => {
+        const user = users.filter((user) => user.email === email);
+        return Promise.resolve(user);
+      },
       create: (name: string, email: string, password: string) => {
-        return Promise.resolve({ id: 1, name, email, password } as User);
+        const user = {
+          id: Math.floor(Math.random() * 999999),
+          name,
+          email,
+          password,
+        } as User;
+
+        users.push(user);
+        return Promise.resolve(user);
       },
     };
 
@@ -86,17 +99,7 @@ describe('AuthService', () => {
   });
 
   it('should login existing user', async () => {
-    fakeUsersService.find = () => {
-      return Promise.resolve([
-        {
-          id: 1,
-          name: 'Jane Doe',
-          email: 'hv3RU@example.com',
-          password:
-            '0bdb34e1b84c48c5.463a3483d77675d1284dc73d01176e5cfbc9dfd2b55afc675469c5395bdb0a5027b338346696c4be41aaa2baef2fa4751f7a1bb745905fbb222cd508734588a4',
-        } as User,
-      ]);
-    };
+    await service.register('John Doe', 'hv3RU@example.com', 'password');
     const user = await service.login('hv3RU@example.com', 'password');
     expect(user).toBeDefined();
   });
